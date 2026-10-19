@@ -3,965 +3,642 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#101b29">
-<meta name="description" content="CITYVERSE: MY CITY - Game simulasi bina bandar moden Malaysia.">
-<title>CITYVERSE: MY CITY</title>
+<title>CITYVERSE 3D — MY CITY</title>
+
 <style>
-:root {
-  --bg:#101722;
-  --panel:#192536;
-  --panel2:#202f43;
-  --line:#304258;
-  --text:#f2f6fc;
-  --muted:#9aadc2;
-  --green:#42dda0;
-  --blue:#61b7ff;
-  --gold:#ffd166;
-  --red:#ff777e;
+:root{
+ --bg:#101722;--panel:#192536;--line:#304258;
+ --text:#f3f7fc;--muted:#a0b1c5;--green:#46e5a6;
+ --gold:#ffd166;--blue:#64c4ff;
 }
-* { box-sizing:border-box; }
-html,body { margin:0; width:100%; min-height:100%; }
-body {
-  background:var(--bg); color:var(--text);
-  font-family:Inter,system-ui,-apple-system,sans-serif;
-  overscroll-behavior:none;
-}
-button { font:inherit; cursor:pointer; touch-action:manipulation; }
-button:focus-visible { outline:2px solid var(--green); outline-offset:2px; }
-.app { max-width:1500px; margin:auto; padding:12px; padding-bottom:30px; }
-header {
- display:flex; justify-content:space-between; align-items:center;
- gap:10px; padding:8px 2px 15px;
-}
-.brand { display:flex; align-items:center; gap:10px; min-width:0; }
-.logo {
- width:45px; height:45px; flex-shrink:0; border-radius:15px;
- display:grid; place-items:center; font-size:25px;
- background:linear-gradient(140deg,#45edb0,#2689b9);
- box-shadow:0 7px 25px #42dda022;
-}
-.brand h1 { margin:0; font-size:clamp(17px,4vw,24px); letter-spacing:-.7px; }
-.brand p { margin:3px 0 0; color:var(--muted); font-size:10px; letter-spacing:2px; }
-.head-actions { display:flex; align-items:center; gap:7px; }
-.pill {
- border:1px solid var(--line); background:var(--panel);
- color:var(--text); padding:9px 11px; border-radius:12px; font-size:12px;
-}
-.pill.active { border-color:var(--green); color:var(--green); }
-.stats {
- display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px;
- margin-bottom:10px;
-}
-.stat {
- background:linear-gradient(145deg,#1c2a3d,#172231);
- border:1px solid #293b50; border-radius:15px; padding:12px 10px;
- min-width:0;
-}
-.stat .label { color:var(--muted); font-size:10px; margin-bottom:7px; }
-.stat .value { font-size:clamp(15px,3.8vw,23px); font-weight:800; letter-spacing:-.6px; overflow-wrap:anywhere; }
-.stat .sub { font-size:10px; color:var(--muted); margin-top:5px; }
-.green { color:var(--green); } .gold { color:var(--gold); }
-.blue { color:var(--blue); } .red { color:var(--red); }
-.layout { display:grid; grid-template-columns:minmax(0,1fr) 285px; gap:10px; align-items:start; }
-.panel {
- border:1px solid var(--line); background:var(--panel);
- border-radius:18px; overflow:hidden; min-width:0;
-}
-.panel-head {
- padding:13px 14px; display:flex; align-items:center;
- justify-content:space-between; gap:8px;
-}
-.panel-head h2 { font-size:14px; margin:0; }
-.panel-head p { font-size:10px; color:var(--muted); margin:5px 0 0; }
-.live { color:var(--green); font-size:10px; white-space:nowrap; }
-.canvas-wrap {
- position:relative; width:100%; height:clamp(310px,53vw,530px);
- overflow:hidden; background:#a8d3d5;
-}
-canvas { display:block; width:100%; height:100%; touch-action:pan-y; }
-.map-badge {
- position:absolute; left:10px; top:10px; border-radius:9px;
- background:#101b29db; border:1px solid #ffffff25;
- padding:7px 9px; font-size:10px; pointer-events:none;
-}
-.map-bottom {
- position:absolute; left:10px; right:10px; bottom:10px;
- display:flex; justify-content:space-between; align-items:end; gap:8px;
- pointer-events:none;
-}
-.map-bottom span {
- background:#101b29dd; padding:7px 9px; border-radius:9px;
- font-size:10px; color:#e6f5ff;
-}
-.map-bottom button { pointer-events:auto; }
-.map-controls { display:flex; gap:5px; }
-.map-controls button {
- border:1px solid #ffffff35; border-radius:9px;
- background:#101b29e8; color:white; padding:8px 10px;
-}
-.toolbar { padding:12px; border-top:1px solid var(--line); }
-.toolbar-title {
- font-size:10px; color:var(--muted); margin:0 0 8px;
- letter-spacing:1.1px; font-weight:700;
-}
-.tools { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; }
-.tool {
- min-width:0; background:#202f43; color:var(--text);
- border:1px solid #304258; border-radius:12px;
- padding:9px 4px; min-height:68px;
-}
-.tool .emoji { display:block; font-size:22px; margin-bottom:5px; }
-.tool .name { display:block; font-size:10px; font-weight:700; }
-.tool .cost { display:block; font-size:9px; color:var(--muted); margin-top:4px; }
-.tool.selected { border-color:var(--green); background:#1a403d; box-shadow:inset 0 0 0 1px #42dda055; }
-.tool:disabled { opacity:.4; cursor:not-allowed; }
-.side { display:flex; flex-direction:column; gap:10px; }
-.side-section { padding:13px; }
-.section-title { font-size:13px; margin:0 0 12px; }
-.mode-switch { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
-.mode-btn {
- background:#202f43; color:var(--muted); border:1px solid var(--line);
- padding:10px 5px; border-radius:10px; font-size:11px; font-weight:700;
-}
-.mode-btn.selected { color:var(--green); border-color:var(--green); background:#1b3d3b; }
-.action-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
-.action {
- border:1px solid var(--line); background:#202f43; color:var(--text);
- border-radius:11px; padding:11px 8px; font-size:11px; font-weight:650;
-}
-.action.primary { background:var(--green); border-color:var(--green); color:#10251f; }
-.action.danger { color:#ff9da3; }
-.action:disabled { opacity:.4; }
-.resource { margin:12px 0; }
-.resource-top { display:flex; justify-content:space-between; gap:8px; font-size:11px; margin-bottom:7px; }
-.resource-top span:last-child { color:var(--muted); }
-.track { height:7px; background:#0d1622; border-radius:10px; overflow:hidden; }
-.fill { height:100%; border-radius:10px; transition:width .25s; background:var(--green); }
-.fill.water { background:var(--blue); }
-.fill.warn { background:var(--gold); }
-.fill.bad { background:var(--red); }
-.notice {
- padding:10px; border-radius:10px; background:#233247;
- color:#b9c9dc; font-size:11px; line-height:1.6;
-}
-.notice.good { border:1px solid #42dda044; color:#9ef3cc; }
-.notice.bad { border:1px solid #ff777e55; color:#ffb3b6; }
-.log { display:flex; flex-direction:column; gap:9px; }
-.log-item { display:flex; gap:9px; align-items:start; font-size:11px; line-height:1.5; }
-.log-icon { width:28px; height:28px; border-radius:9px; background:#25374c; display:grid; place-items:center; flex-shrink:0; }
-.log-item small { display:block; color:var(--muted); margin-top:2px; }
-.footer { text-align:center; padding:20px 8px 5px; font-size:10px; color:#71869d; }
-.toast {
- position:fixed; left:50%; bottom:25px; z-index:10;
- transform:translate(-50%,20px); opacity:0; pointer-events:none;
- background:#e8fff5; color:#133328; padding:12px 17px;
- border-radius:12px; box-shadow:0 8px 30px #0005;
- font-size:12px; font-weight:750; transition:.22s;
- max-width:calc(100vw - 30px); text-align:center;
-}
-.toast.show { transform:translate(-50%,0); opacity:1; }
-dialog {
- background:#192536; color:var(--text); border:1px solid var(--line);
- border-radius:18px; width:min(420px,calc(100% - 28px));
- padding:20px; box-shadow:0 20px 90px #0009;
-}
-dialog::backdrop { background:#07101bd9; }
-dialog h2 { margin:0 0 8px; font-size:19px; }
-dialog p { color:var(--muted); font-size:12px; line-height:1.7; }
-.dialog-actions { display:flex; gap:8px; margin-top:17px; }
-.dialog-actions button { flex:1; }
-@media(max-width:780px) {
- .app { padding:9px; padding-bottom:22px; }
- .layout { grid-template-columns:minmax(0,1fr); }
- .side { display:grid; grid-template-columns:1fr 1fr; align-items:start; }
- .side .wide { grid-column:1/-1; }
- .canvas-wrap { height:clamp(300px,78vw,460px); }
- .head-actions .optional { display:none; }
-}
-@media(max-width:390px) {
- .stats { gap:5px; }
- .stat { padding:10px 7px; border-radius:12px; }
- .stat .label { font-size:9px; }
- .side { grid-template-columns:1fr; }
- .side .wide { grid-column:auto; }
- .tool { min-height:64px; }
- .tools { gap:5px; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+ font:14px system-ui,-apple-system,sans-serif;overflow:hidden}
+button{font:inherit;cursor:pointer;touch-action:manipulation}
+#app{height:100dvh;display:flex;flex-direction:column}
+header{display:flex;align-items:center;justify-content:space-between;
+ padding:10px 13px;background:#121e2d;border-bottom:1px solid var(--line);gap:8px}
+.brand{font-size:17px;font-weight:900;letter-spacing:-.5px}
+.brand span{color:var(--green)}
+.subtitle{font-size:9px;letter-spacing:1.5px;color:var(--muted)}
+.head-actions{display:flex;gap:6px}
+.btn{background:#24344a;border:1px solid #40536b;color:white;
+ border-radius:10px;padding:9px 11px}
+.btn.green{background:var(--green);color:#10251e;border-color:var(--green);font-weight:800}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:8px}
+.metric{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:9px 7px;min-width:0}
+.metric label{font-size:9px;color:var(--muted);display:block;margin-bottom:5px}
+.metric strong{font-size:clamp(13px,3.4vw,20px);display:block;overflow-wrap:anywhere}
+.metric small{font-size:9px;color:var(--muted)}
+.greenText{color:var(--green)}.goldText{color:var(--gold)}.blueText{color:var(--blue)}
+#stage{flex:1;min-height:0;position:relative;overflow:hidden;background:#9bc9d1}
+#game{width:100%;height:100%;display:block;touch-action:none}
+.overlay{position:absolute;top:10px;left:10px;right:10px;display:flex;
+ justify-content:space-between;align-items:flex-start;gap:8px;pointer-events:none}
+.tag{padding:8px 10px;background:#111d2ce8;border:1px solid #ffffff20;
+ border-radius:10px;font-size:10px;box-shadow:0 4px 14px #0002}
+#status{color:var(--green)}
+.bottomOverlay{position:absolute;bottom:10px;left:10px;right:10px;
+ display:flex;justify-content:space-between;gap:7px;align-items:end;pointer-events:none}
+.bottomOverlay .tag{max-width:70%}
+.bottomOverlay button{pointer-events:auto}
+#toast{position:absolute;top:52px;left:50%;transform:translateX(-50%);
+ background:#f1fff8;color:#14352a;border-radius:10px;padding:10px 13px;
+ font-weight:800;font-size:12px;display:none;z-index:5;max-width:90%;text-align:center}
+#bottom{background:#141f2e;border-top:1px solid var(--line);padding:8px 9px;
+ padding-bottom:max(9px,env(safe-area-inset-bottom))}
+.tools{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+.tool{min-width:0;padding:7px 2px;border-radius:10px;border:1px solid #304258;
+ background:#202e42;color:white;min-height:60px}
+.tool .ico{font-size:20px;display:block;margin-bottom:3px}
+.tool .nm{font-size:10px;font-weight:750;display:block}
+.tool .cost{font-size:9px;color:#a0b1c5;display:block;margin-top:3px}
+.tool.selected{border-color:var(--green);background:#17443a;box-shadow:inset 0 0 0 1px #46e5a655}
+.controls{display:flex;gap:6px;margin-top:7px;overflow-x:auto}
+.controls button{white-space:nowrap;font-size:10px;padding:9px}
+#side{position:absolute;right:10px;top:66px;display:flex;flex-direction:column;gap:6px}
+#side button{background:#152335eF;border:1px solid #ffffff33;color:white;
+ border-radius:11px;width:40px;height:40px;font-size:17px}
+@media(min-width:850px){
+ header{padding:13px 20px}
+ .metrics{padding:10px 16px;gap:10px}
+ .metric{padding:13px}
+ #bottom{padding:12px 18px}
+ .tools{grid-template-columns:repeat(10,minmax(0,1fr))}
+ .tool{min-height:70px}
 }
 </style>
 </head>
+
 <body>
-<div class="app">
+<div id="app">
 <header>
- <div class="brand">
-  <div class="logo">🏙️</div>
-  <div><h1>CITYVERSE <span class="green">MY CITY</span></h1><p>BUILD YOUR OWN MALAYSIA</p></div>
+ <div>
+  <div class="brand">🏙 CITYVERSE <span>3D</span></div>
+  <div class="subtitle">BUILD YOUR OWN MALAYSIA</div>
  </div>
  <div class="head-actions">
-  <button class="pill" id="saveBtn">💾 <span class="optional">Simpan</span></button>
-  <button class="pill" id="soundBtn" title="Bunyi">🔊</button>
+  <button class="btn" id="save">💾 Simpan</button>
+  <button class="btn" id="pause">Ⅱ</button>
  </div>
 </header>
 
-<section class="stats">
- <div class="stat"><div class="label">💰 BAKI WANG</div><div class="value gold" id="money">RM 250k</div><div class="sub" id="income">Pendapatan +RM 0/hari</div></div>
- <div class="stat"><div class="label">👥 PENDUDUK</div><div class="value" id="population">0</div><div class="sub" id="popSub">Bandar baru</div></div>
- <div class="stat"><div class="label">⚡ ELEKTRIK</div><div class="value green" id="power">0 / 0</div><div class="sub" id="powerSub">MW digunakan / tersedia</div></div>
- <div class="stat"><div class="label">💧 BEKALAN AIR</div><div class="value blue" id="water">0 / 0</div><div class="sub" id="waterSub">unit digunakan / tersedia</div></div>
-</section>
-
-<div class="layout">
- <main class="panel">
-  <div class="panel-head">
-   <div><h2>🌆 Peta Bandar</h2><p id="cityName">Bandar Baru • Malaysia</p></div>
-   <span class="live" id="liveState">● SIMULASI AKTIF</span>
-  </div>
-  <div class="canvas-wrap" id="canvasWrap">
-   <canvas id="cityCanvas" aria-label="Peta bandar interaktif. Sentuh petak untuk membina."></canvas>
-   <div class="map-badge" id="mapBadge">📍 BANDAR BARU · TAHUN 1</div>
-   <div class="map-bottom">
-    <span id="mapHint">Pilih binaan, kemudian sentuh peta</span>
-    <div class="map-controls">
-     <button id="rotateBtn" title="Putar pandangan">↻</button>
-     <button id="gridBtn" title="Grid">▦</button>
-    </div>
-   </div>
-  </div>
-  <div class="toolbar">
-   <p class="toolbar-title">PEMBINAAN BANDAR</p>
-   <div class="tools" id="tools"></div>
-  </div>
- </main>
-
- <aside class="side">
-  <section class="panel">
-   <div class="side-section">
-    <h3 class="section-title">🎮 Mod Permainan</h3>
-    <div class="mode-switch">
-     <button class="mode-btn selected" data-mode="sandbox">🌴 Sandbox</button>
-     <button class="mode-btn" data-mode="challenge">🏆 Cabaran</button>
-    </div>
-    <div class="notice" id="modeInfo" style="margin-top:10px">
-     Bina bandar bebas. Dana permulaan RM250,000.
-    </div>
-   </div>
-  </section>
-
-  <section class="panel">
-   <div class="side-section">
-    <h3 class="section-title">📊 Kesihatan Bandar</h3>
-    <div class="resource">
-     <div class="resource-top"><span>Kebahagiaan</span><span id="happyText">75%</span></div>
-     <div class="track"><div class="fill" id="happyBar" style="width:75%"></div></div>
-    </div>
-    <div class="resource">
-     <div class="resource-top"><span>Permintaan rumah</span><span id="demandText">50%</span></div>
-     <div class="track"><div class="fill" id="demandBar" style="width:50%"></div></div>
-    </div>
-    <div class="resource">
-     <div class="resource-top"><span>Bekalan elektrik</span><span id="powerText">0%</span></div>
-     <div class="track"><div class="fill" id="powerBar" style="width:0%"></div></div>
-    </div>
-    <div class="resource">
-     <div class="resource-top"><span>Bekalan air</span><span id="waterText">0%</span></div>
-     <div class="track"><div class="fill water" id="waterBar" style="width:0%"></div></div>
-    </div>
-   </div>
-  </section>
-
-  <section class="panel">
-   <div class="side-section">
-    <h3 class="section-title">⏱️ Kawalan Masa</h3>
-    <div class="action-grid">
-     <button class="action primary" id="pauseBtn">Ⅱ Jeda</button>
-     <button class="action" id="speedBtn">▶▶ 2×</button>
-     <button class="action" id="taxBtn">Cukai: 8%</button>
-     <button class="action" id="newBtn">＋ Bandar Baru</button>
-    </div>
-    <p style="font-size:10px;color:var(--muted);margin:12px 0 0" id="dateText">Hari 1 · Tahun 1</p>
-   </div>
-  </section>
-
-  <section class="panel wide">
-   <div class="side-section">
-    <h3 class="section-title">📋 Laporan Bandar</h3>
-    <div class="log" id="log"></div>
-   </div>
-  </section>
-
-  <section class="panel wide">
-   <div class="side-section">
-    <h3 class="section-title">🧰 Pengurusan</h3>
-    <div class="action-grid">
-     <button class="action" id="bulldozeBtn">🧹 Padam Binaan</button>
-     <button class="action" id="repairBtn">🔧 Baiki Bandar</button>
-     <button class="action" id="exportBtn">📄 Eksport Data</button>
-     <button class="action danger" id="resetBtn">↺ Reset Game</button>
-    </div>
-   </div>
-  </section>
- </aside>
-</div>
-<div class="footer">CITYVERSE: MY CITY · BUILD • MANAGE • EXPAND<br>Simulasi bandar untuk hiburan. Kos dan kapasiti ialah nilai permainan, bukan data utiliti sebenar.</div>
+<div class="metrics">
+ <div class="metric"><label>💰 BAKI WANG</label><strong class="goldText" id="money">RM 250k</strong><small id="net">+RM 0/hari</small></div>
+ <div class="metric"><label>👥 PENDUDUK</label><strong id="pop">0</strong><small id="capacity">Kapasiti 0</small></div>
+ <div class="metric"><label>⚡ ELEKTRIK</label><strong class="greenText" id="power">0 / 0</strong><small>Guna / tersedia</small></div>
+ <div class="metric"><label>💧 AIR</label><strong class="blueText" id="water">0 / 0</strong><small>Guna / tersedia</small></div>
 </div>
 
-<div class="toast" id="toast" role="status"></div>
-<dialog id="confirmDialog">
- <h2 id="dialogTitle">Bandar Baru?</h2>
- <p id="dialogText">Tindakan ini akan memulakan bandar baru.</p>
- <div class="dialog-actions">
-  <button class="action" id="cancelDialog">Batal</button>
-  <button class="action primary" id="confirmDialogBtn">Teruskan</button>
+<main id="stage">
+ <canvas id="game"></canvas>
+ <div id="toast"></div>
+ <div class="overlay">
+  <div class="tag">📍 <b id="city">BANDAR BARU</b><br><span id="date">HARI 1 · TAHUN 1</span></div>
+  <div class="tag" id="status">● SIMULASI AKTIF</div>
  </div>
-</dialog>
+ <div id="side">
+  <button id="zoomIn" aria-label="Zoom masuk">＋</button>
+  <button id="zoomOut" aria-label="Zoom keluar">−</button>
+  <button id="rotate" aria-label="Putar kamera">↻</button>
+  <button id="home" aria-label="Tetapkan kamera">⌂</button>
+ </div>
+ <div class="bottomOverlay">
+  <div class="tag" id="hint">Pilih binaan, kemudian sentuh tanah</div>
+  <button class="btn" id="grid">▦ Grid</button>
+ </div>
+</main>
 
-<script>
-(() => {
-"use strict";
+<footer id="bottom">
+ <div class="tools" id="tools"></div>
+ <div class="controls">
+  <button class="btn" id="mode">🌴 Sandbox</button>
+  <button class="btn" id="speed">▶ 1×</button>
+  <button class="btn" id="tax">Cukai 8%</button>
+  <button class="btn" id="bulldoze">🧹 Padam</button>
+  <button class="btn" id="export">📄 Eksport</button>
+  <button class="btn" id="reset">↺ Bandar Baru</button>
+ </div>
+</footer>
+</div>
 
-const $ = id => document.getElementById(id);
-const canvas = $("cityCanvas");
-const ctx = canvas.getContext("2d");
-const N = 16;
-const SAVE_KEY = "cityverse_my_city_v1";
+<script type="importmap">
+{
+ "imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+ }
+}
+</script>
+<script type="module">
+import * as THREE from "three";
+import {OrbitControls} from "three/addons/controls/OrbitControls.js";
 
-const TYPES = {
- road:      {name:"Jalan Raya",icon:"🛣️",cost:500,kind:"road"},
- house:     {name:"Rumah",icon:"🏠",cost:3000,kind:"building",pop:12,power:1,water:1,tax:90},
- shop:      {name:"Kedai",icon:"🏪",cost:6500,kind:"building",jobs:8,power:2,water:1,tax:180},
- office:    {name:"Pejabat",icon:"🏢",cost:12000,kind:"building",jobs:20,power:4,water:2,tax:350},
- factory:   {name:"Kilang",icon:"🏭",cost:15000,kind:"building",jobs:25,power:7,water:4,tax:480,happy:-4},
- park:      {name:"Taman",icon:"🌳",cost:4000,kind:"building",happy:9,tax:0},
- power:     {name:"Loji Elektrik",icon:"⚡",cost:25000,kind:"building",genPower:80,power:2,water:1,tax:0},
- waterplant:{name:"Loji Air",icon:"💧",cost:18000,kind:"building",genWater:80,power:2,water:0,tax:0},
- school:    {name:"Sekolah",icon:"🏫",cost:10000,kind:"building",power:3,water:2,happy:5,tax:0},
- hospital:  {name:"Hospital",icon:"🏥",cost:22000,kind:"building",power:6,water:4,happy:10,tax:0},
- police:    {name:"Balai Polis",icon:"🚓",cost:9000,kind:"building",power:2,water:1,happy:4,tax:0},
- fire:      {name:"Balai Bomba",icon:"🚒",cost:9000,kind:"building",power:2,water:1,happy:3,tax:0},
- bulldoze:  {name:"Padam",icon:"🧹",cost:0,kind:"tool"}
+const $=id=>document.getElementById(id);
+const SIZE=28, HALF=SIZE/2, KEY="cityverse3d_v1";
+const defs={
+ road:{name:"Jalan Raya",icon:"🛣️",cost:500,type:"road"},
+ house:{name:"Rumah",icon:"🏠",cost:3000,pop:12,power:1,water:1,tax:90},
+ shop:{name:"Kedai",icon:"🏪",cost:6500,jobs:8,power:2,water:1,tax:180},
+ office:{name:"Pejabat",icon:"🏢",cost:12000,jobs:20,power:4,water:2,tax:350},
+ factory:{name:"Kilang",icon:"🏭",cost:15000,jobs:25,power:7,water:4,tax:480,happy:-4},
+ park:{name:"Taman",icon:"🌳",cost:4000,happy:8},
+ power:{name:"Loji Elektrik",icon:"⚡",cost:25000,genPower:100,power:2,water:1},
+ water:{name:"Loji Air",icon:"💧",cost:18000,genWater:100,power:2},
+ school:{name:"Sekolah",icon:"🏫",cost:10000,power:3,water:2,happy:5},
+ hospital:{name:"Hospital",icon:"🏥",cost:22000,power:6,water:4,happy:10},
+ police:{name:"Balai Polis",icon:"🚓",cost:9000,power:2,water:1,happy:3},
+ fire:{name:"Balai Bomba",icon:"🚒",cost:9000,power:2,water:1,happy:3}
 };
+let selected="road", paused=false, mode="sandbox", speed=1, tax=8;
+let money=250000,day=1,year=1,population=0,happiness=75,challengeWon=false;
+let gridVisible=true, cars=[], buildings=[], roads=new Map(), tiles=new Map();
+let history=[];
+const key=(x,z)=>`${x},${z}`;
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x9bcbd4);
+scene.fog=new THREE.Fog(0x9bcbd4,42,100);
 
-let state;
-let selected = "road";
-let paused = false;
-let speed = 1;
-let taxRate = 8;
-let showGrid = true;
-let camera = 0;
-let audioOn = true;
-let lastTick = Date.now();
-let tickAccumulator = 0;
-let toastTimer;
-let pendingAction = null;
-let dpr = 1;
-let cw = 0, ch = 0;
-let tileW = 30, tileH = 16, originX = 0, originY = 30;
-let hover = null;
+const camera=new THREE.PerspectiveCamera(42,1,.1,300);
+camera.position.set(25,28,31);
+const renderer=new THREE.WebGLRenderer({canvas:$("game"),antialias:true,alpha:false});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.15;
 
-function blankTile() {
- return {type:null, connected:false};
-}
-function makeState(mode="sandbox") {
- const map = Array.from({length:N},()=>Array.from({length:N},blankTile));
- // A short starter road gives the city a usable starting point.
- for(let x=5;x<=9;x++) map[7][x].type="road";
- return {
-  version:1, mode, cityName:"Bandar Baru", map,
-  money:250000, population:0, day:1, year:1,
-  happiness:75, demand:50, income:0, expenses:0,
-  totalBuildings:0, roads:5, paused:false,
-  history:[], challengeWon:false, lastEventDay:0
- };
-}
-state = makeState();
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.target.set(0,0,0);
+controls.enableDamping=true;
+controls.dampingFactor=.08;
+controls.minDistance=12;controls.maxDistance=64;
+controls.maxPolarAngle=Math.PI*.46;
+controls.mouseButtons.LEFT=THREE.MOUSE.ROTATE;
+controls.mouseButtons.RIGHT=THREE.MOUSE.PAN;
+controls.touches.ONE=THREE.TOUCH.ROTATE;
+controls.touches.TWO=THREE.TOUCH.DOLLY_PAN;
 
-function fmt(n) {
- n = Math.round(n || 0);
- if(Math.abs(n)>=1000000) return (n/1000000).toFixed(2)+"j";
- if(Math.abs(n)>=1000) return (n/1000).toFixed(1)+"k";
- return n.toLocaleString("ms-MY");
-}
-function rm(n) {
- return "RM "+fmt(n);
-}
-function addLog(icon,title,detail) {
- state.history.unshift({icon,title,detail,day:state.day});
- state.history = state.history.slice(0,5);
- renderLog();
-}
-function toast(message) {
- const el=$("toast");
- el.textContent=message;
- el.classList.add("show");
- clearTimeout(toastTimer);
- toastTimer=setTimeout(()=>el.classList.remove("show"),2300);
-}
-function playSound(freq=500) {
- if(!audioOn) return;
- try {
-  const AC=window.AudioContext||window.webkitAudioContext;
-  if(!AC) return;
-  const ac=new AC(), osc=ac.createOscillator(), gain=ac.createGain();
-  osc.frequency.value=freq; osc.type="sine";
-  gain.gain.setValueAtTime(.045,ac.currentTime);
-  gain.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.12);
-  osc.connect(gain); gain.connect(ac.destination);
-  osc.start(); osc.stop(ac.currentTime+.12);
-  osc.onended=()=>ac.close();
- } catch(e) {}
-}
-function inBounds(x,y) { return x>=0&&y>=0&&x<N&&y<N; }
-function tileAt(x,y) { return inBounds(x,y)?state.map[y][x]:null; }
-function isRoad(x,y) { return inBounds(x,y)&&state.map[y][x].type==="road"; }
-function adjacentRoad(x,y) {
- return isRoad(x+1,y)||isRoad(x-1,y)||isRoad(x,y+1)||isRoad(x,y-1);
-}
-function countType(type) {
- let c=0;
- for(const row of state.map) for(const t of row) if(t.type===type)c++;
- return c;
-}
-function countBuildings() {
- let c=0;
- for(const row of state.map) for(const t of row)
-  if(t.type&&TYPES[t.type]?.kind==="building") c++;
- return c;
-}
-function totals() {
- let genPower=0, usedPower=0, genWater=0, usedWater=0;
- let popCapacity=0, jobs=0, taxBase=0, happiness=75, parks=0;
- let homes=0, connectedHomes=0, connectedBuildings=0, roadCount=0;
- for(let y=0;y<N;y++) for(let x=0;x<N;x++) {
-  const t=state.map[y][x];
-  if(!t.type) continue;
-  if(t.type==="road") { roadCount++; continue; }
-  const b=TYPES[t.type];
-  if(!b) continue;
-  const connected=adjacentRoad(x,y);
-  if(connected) connectedBuildings++;
-  if(b.genPower) genPower+=b.genPower;
-  if(b.genWater) genWater+=b.genWater;
-  if(connected) {
-   usedPower+=b.power||0;
-   usedWater+=b.water||0;
-   popCapacity+=b.pop||0;
-   jobs+=b.jobs||0;
-   taxBase+=b.tax||0;
-   if(t.type==="house") { homes++; connectedHomes++; }
-   if(t.type==="park") parks++;
-   happiness+=b.happy||0;
-  } else {
-   if(t.type==="house") homes++;
-  }
- }
- const servedPower=usedPower===0?100:Math.min(100,genPower/usedPower*100);
- const servedWater=usedWater===0?100:Math.min(100,genWater/usedWater*100);
- const serviceFactor=Math.min(servedPower,servedWater)/100;
- const population=Math.floor(popCapacity*serviceFactor);
- const effectiveTax=taxBase*(taxRate/8);
- const taxIncome=Math.floor(population*taxRate*1.8 + effectiveTax);
- const operating=genPower/80*320+genWater/80*220+countType("school")*80+
- countType("hospital")*150+countType("police")*60+countType("fire")*60+
- roadCount*3+countType("factory")*100+countType("office")*50;
- happiness=Math.max(5,Math.min(100,Math.round(happiness + Math.min(8,parks*2) - (serviceFactor<1?20*(1-serviceFactor):0) - Math.max(0,taxRate-8)*2 - Math.max(0,taxRate-12)*2)));
- return {genPower,usedPower,genWater,usedWater,popCapacity,jobs,taxIncome,operating,
-  servedPower,servedWater,serviceFactor,population,happiness,homes,connectedHomes,connectedBuildings,roadCount};
-}
-function canAfford(cost) { return state.money>=cost; }
-function place(x,y,type) {
- if(!inBounds(x,y)) return;
- const tile=state.map[y][x];
- if(type==="bulldoze") {
-  if(!tile.type) { toast("Petak ini kosong."); return; }
-  const old=TYPES[tile.type];
-  const refund=Math.floor((old?.cost||0)*.25);
-  tile.type=null;
-  state.money+=refund;
-  state.totalBuildings=Math.max(0,state.totalBuildings-(old?.kind==="building"?1:0));
-  addLog("🧹","Binaan dipadam",refund?`Pemulangan ${rm(refund)}.`:"Petak dibersihkan.");
-  playSound(270); updateUI(); draw(); return;
- }
- const def=TYPES[type];
- if(!def) return;
- if(tile.type===type) { toast("Binaan ini sudah ada di sini."); return; }
- if(tile.type) { toast("Petak sudah digunakan. Padam dahulu jika mahu menggantikannya."); return; }
- if(type!=="road"&&!adjacentRoad(x,y)) {
-  toast("Bina berhampiran jalan raya supaya bangunan bersambung.");
-  return;
- }
- if(!canAfford(def.cost)) { toast("Wang tidak mencukupi!"); return; }
- state.money-=def.cost;
- tile.type=type;
- if(type==="road") state.roads++;
- else state.totalBuildings++;
- addLog(def.icon,def.name+" dibina",`${rm(def.cost)} · Petak ${x+1}, ${y+1}`);
- playSound(570);
- updateUI(); draw(); save(false);
-}
-function setMode(mode) {
- if(state.mode===mode) return;
- state.mode=mode;
- if(mode==="challenge") {
-  state.cityName="Bandar Cabaran";
-  state.money=Math.min(state.money,100000);
-  toast("Mod Cabaran: capai 500 penduduk dan bina hospital!");
-  addLog("🏆","Mod Cabaran diaktifkan","Sasaran: 500 penduduk dan sebuah hospital.");
- } else {
-  state.cityName="Bandar Sandbox";
-  toast("Mod Sandbox: bina bandar secara bebas!");
-  addLog("🌴","Mod Sandbox diaktifkan","Bina bandar tanpa sasaran kemenangan.");
- }
- document.querySelectorAll("[data-mode]").forEach(b=>b.classList.toggle("selected",b.dataset.mode===mode));
- $("modeInfo").textContent=mode==="challenge"
-  ?"Sasaran: capai 500 penduduk dan bina hospital. Dana dan kos pembinaan tetap terpakai."
-  :"Bina bandar bebas. Teruskan pembangunan menggunakan pendapatan dan sumber yang ada.";
- updateUI(); save(false);
-}
-function dailyTick() {
- const t=totals();
- state.population=t.population;
- state.happiness=t.happiness;
- state.income=t.taxIncome;
- state.expenses=Math.round(t.operating);
- const net=state.income-state.expenses;
- state.money+=net;
- state.day++;
- if(state.day>365) { state.day=1; state.year++; }
- state.demand=Math.max(0,Math.min(100,Math.round(25+state.happiness*.55+Math.min(20,t.jobs/10)-state.population/80)));
- if(state.money<0) {
-  state.happiness=Math.max(5,state.happiness-5);
-  if(state.day%3===0) addLog("⚠️","Kewangan negatif","Kurangkan kos atau tingkatkan pendapatan.");
- }
- if(state.day%7===0) {
-  addLog(net>=0?"📈":"📉",net>=0?"Laporan mingguan":"Amaran bajet",
-   `${net>=0?"Lebihan":"Defisit"} ${rm(Math.abs(net))} sehari. Penduduk: ${fmt(state.population)}.`);
- }
- if(state.mode==="challenge"&&!state.challengeWon&&state.population>=500&&countType("hospital")>=1) {
-  state.challengeWon=true;
-  addLog("🏆","CABARAN SELESAI!","Bandar mencapai 500 penduduk dan mempunyai hospital.");
-  toast("🏆 Tahniah! Cabaran bandar berjaya!");
- }
- updateUI();
- if(state.day%3===0) save(false);
-}
-function updateUI() {
- const t=totals();
- state.population=t.population;
- state.happiness=t.happiness;
- $("money").textContent=rm(state.money);
- $("income").textContent=`Bersih ${state.income-state.expenses>=0?"+":"−"}${rm(Math.abs(state.income-state.expenses))}/hari`;
- $("population").textContent=fmt(state.population);
- $("popSub").textContent=`Kapasiti ${fmt(t.popCapacity)} · ${countBuildings()} binaan`;
- $("power").textContent=`${fmt(t.usedPower)} / ${fmt(t.genPower)}`;
- $("water").textContent=`${fmt(t.usedWater)} / ${fmt(t.genWater)}`;
- $("powerSub").textContent="MW digunakan / tersedia";
- $("waterSub").textContent="unit digunakan / tersedia";
- $("happyText").textContent=state.happiness+"%";
- $("happyBar").style.width=state.happiness+"%";
- $("demandText").textContent=state.demand+"%";
- $("demandBar").style.width=state.demand+"%";
- $("powerText").textContent=Math.round(t.servedPower)+"%";
- $("powerBar").style.width=t.servedPower+"%";
- $("powerBar").className="fill "+(t.servedPower<50?"bad":t.servedPower<100?"warn":"");
- $("waterText").textContent=Math.round(t.servedWater)+"%";
- $("waterBar").style.width=t.servedWater+"%";
- $("waterBar").className="fill water "+(t.servedWater<50?"bad":t.servedWater<100?"warn":"");
- $("dateText").textContent=`Hari ${state.day} · Tahun ${state.year} · Cukai ${taxRate}%`;
- $("cityName").textContent=`${state.cityName} • Malaysia`;
- $("mapBadge").textContent=`📍 ${state.cityName.toUpperCase()} · TAHUN ${state.year}`;
- $("pauseBtn").textContent=paused?"▶ Sambung":"Ⅱ Jeda";
- $("liveState").textContent=paused?"Ⅱ SIMULASI DIJEDA":"● SIMULASI AKTIF";
- $("liveState").style.color=paused?"#ffd166":"var(--green)";
- $("speedBtn").textContent=speed===1?"▶▶ 2×":speed===2?"▶▶ 4×":"▶ 1×";
- $("taxBtn").textContent=`Cukai: ${taxRate}%`;
- $("modeInfo").className="notice"+(state.mode==="challenge"&&state.challengeWon?" good":"");
- if(state.mode==="challenge"&&state.challengeWon) $("modeInfo").textContent="🏆 Cabaran selesai! Teruskan membesarkan bandar anda.";
- renderLog();
-}
-function renderLog() {
- const el=$("log");
- if(!state.history.length) {
-  el.innerHTML='<div class="notice">Selamat datang, Datuk Bandar! Bina jalan dan rumah pertama anda.</div>';
-  return;
- }
- el.innerHTML=state.history.map(item=>`<div class="log-item"><div class="log-icon">${escapeHTML(item.icon)}</div><div><strong>${escapeHTML(item.title)}</strong><div>${escapeHTML(item.detail)}</div><small>Hari ${item.day}</small></div></div>`).join("");
-}
-function escapeHTML(s) {
- return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+scene.add(new THREE.HemisphereLight(0xdff7ff,0x697657,2.1));
+const sun=new THREE.DirectionalLight(0xfff0d7,3);
+sun.position.set(-18,32,20);sun.castShadow=true;
+sun.shadow.mapSize.set(1024,1024);
+sun.shadow.camera.left=-28;sun.shadow.camera.right=28;
+sun.shadow.camera.top=28;sun.shadow.camera.bottom=-28;
+sun.shadow.bias=-.001;
+scene.add(sun);
+
+const mat=(color,roughness=.88,metalness=0)=>new THREE.MeshStandardMaterial({color,roughness,metalness});
+const M={
+ grass:mat(0x9ab88b),grass2:mat(0xa4c291),earth:mat(0x71866a),
+ road:mat(0x454b52,.95),sidewalk:mat(0xc4c1b1),
+ line:mat(0xf5e7b7),white:mat(0xf7f4e9),
+ trunk:mat(0x77543b),leaf:mat(0x52855a),leaf2:mat(0x71995a),
+ glass:mat(0x8bc2d3,.32,.12),darkGlass:mat(0x315d73,.3,.15),
+ roof:mat(0x555d60),redRoof:mat(0x9b5d49),
+ concrete:mat(0xd9d0be),yellow:mat(0xe6b958),
+ water:mat(0x4dabc5,.25,.2)
+};
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(120,120),mat(0x76b8c8));
+ground.rotation.x=-Math.PI/2;ground.position.y=-.48;ground.receiveShadow=true;
+scene.add(ground);
+
+// Main buildable terrain
+const island=new THREE.Mesh(new THREE.BoxGeometry(SIZE,.75,SIZE),
+ [M.grass,M.grass,M.grass,M.earth,M.grass,M.grass]);
+island.position.y=-.42;island.receiveShadow=true;island.castShadow=true;scene.add(island);
+
+const groundTiles=new THREE.Group();scene.add(groundTiles);
+for(let x=-HALF;x<HALF;x++)for(let z=-HALF;z<HALF;z++){
+ const g=new THREE.PlaneGeometry(.985,.985);
+ const m=new THREE.Mesh(g,((x+z)&1)?M.grass:M.grass2);
+ m.rotation.x=-Math.PI/2;m.position.set(x+.5,-.035,z+.5);
+ m.receiveShadow=true;groundTiles.add(m);
 }
 
-const TOOL_ORDER=["road","house","shop","office","factory","park","power","waterplant","school","hospital","police","fire","bulldoze"];
-function buildTools() {
- $("tools").innerHTML=TOOL_ORDER.map(type=>{
-  const d=TYPES[type];
-  return `<button class="tool ${selected===type?"selected":""}" data-tool="${type}">
-   <span class="emoji">${d.icon}</span><span class="name">${d.name}</span>
-   <span class="cost">${d.cost?rm(d.cost):"PERCUMA"}</span></button>`;
- }).join("");
- $("tools").querySelectorAll("[data-tool]").forEach(b=>b.addEventListener("click",()=>{
-  selected=b.dataset.tool;
-  buildTools();
-  $("mapHint").textContent=selected==="bulldoze"?"Sentuh binaan untuk memadam":"Pilih "+TYPES[selected].name+", kemudian sentuh peta";
-  playSound(440);
- }));
-}
+const world=new THREE.Group();scene.add(world);
+const previewGroup=new THREE.Group();scene.add(previewGroup);
+const raycaster=new THREE.Raycaster();
+const pointer=new THREE.Vector2();
+let preview=null,hoverCell=null,dragged=false,pointerStart=null;
+let carClock=0,lastFrame=performance.now(),simClock=0;
 
-function resizeCanvas() {
- const rect=canvas.getBoundingClientRect();
- if(!rect.width||!rect.height) return;
- dpr=Math.min(window.devicePixelRatio||1,2);
- cw=rect.width; ch=rect.height;
- canvas.width=Math.round(cw*dpr);
- canvas.height=Math.round(ch*dpr);
- ctx.setTransform(dpr,0,0,dpr,0,0);
- tileW=Math.min(49,cw/(N+1.6));
- tileH=tileW*.53;
- originX=cw/2;
- originY=Math.max(20,ch*.13);
- draw();
+function box(parent,w,h,d,material,x,y,z,cast=true){
+ const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);
+ o.position.set(x,y,z);o.castShadow=cast;o.receiveShadow=true;
+ parent.add(o);return o;
 }
-function project(x,y,z=0) {
- let xx=x, yy=y;
- if(camera===1) { xx=N-1-y; yy=x; }
- if(camera===2) { xx=N-1-x; yy=N-1-y; }
- if(camera===3) { xx=y; yy=N-1-x; }
- return {x:originX+(xx-yy)*tileW/2,y:originY+(xx+yy)*tileH/2-z};
+function cylinder(parent,r1,r2,h,material,x,y,z,segments=8){
+ const o=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,segments),material);
+ o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o;
 }
-function unproject(px,py) {
- const a=(px-originX)/(tileW/2);
- const b=(py-originY)/(tileH/2);
- let xx=(a+b)/2, yy=(b-a)/2;
- let x=Math.round(xx), y=Math.round(yy);
- let tx=x,ty=y;
- if(camera===1){tx=y;ty=N-1-x;}
- if(camera===2){tx=N-1-x;ty=N-1-y;}
- if(camera===3){tx=N-1-y;ty=x;}
- return {x:tx,y:ty};
+function sphere(parent,r,material,x,y,z,segments=8){
+ const o=new THREE.Mesh(new THREE.SphereGeometry(r,segments,6),material);
+ o.position.set(x,y,z);o.castShadow=true;parent.add(o);return o;
 }
-function polygon(points,fill,stroke=null) {
- ctx.beginPath();
- points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
- ctx.closePath(); ctx.fillStyle=fill; ctx.fill();
- if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=.8;ctx.stroke();}
+function flat(parent,w,d,material,x,y,z){
+ const o=new THREE.Mesh(new THREE.PlaneGeometry(w,d),material);
+ o.rotation.x=-Math.PI/2;o.position.set(x,y,z);parent.add(o);return o;
 }
-function diamond(x,y,z=0) {
- const p=project(x,y,z);
- return [{x:p.x,y:p.y},{x:p.x+tileW/2,y:p.y+tileH/2},{x:p.x,y:p.y+tileH},{x:p.x-tileW/2,y:p.y+tileH/2}];
+function roadGroup(x,z){
+ const g=new THREE.Group();g.position.set(x,0,z);world.add(g);
+ flat(g,.98,.98,M.road,0,.008,0);
+ flat(g,.08,.65,M.line,0,.015,0);
+ flat(g,.65,.08,M.line,0,.015,0);
+ // Edge markings
+ flat(g,.025,.92,M.white,-.43,.018,0);
+ flat(g,.025,.92,M.white,.43,.018,0);
+ flat(g,.92,.025,M.white,0,.018,-.43);
+ flat(g,.92,.025,M.white,0,.018,.43);
+ // Sidewalk corners
+ for(const dx of [-.46,.46])for(const dz of [-.46,.46])
+  flat(g,.07,.07,M.sidewalk,dx,.025,dz);
+ return g;
 }
-function drawGround() {
- const sky=ctx.createLinearGradient(0,0,0,ch);
- sky.addColorStop(0,"#8dc7d2");sky.addColorStop(.7,"#b8d8c0");sky.addColorStop(1,"#92b6a0");
- ctx.fillStyle=sky;ctx.fillRect(0,0,cw,ch);
- // Water outside the buildable island.
- ctx.fillStyle="#77b8c9";
- ctx.fillRect(0,ch*.65,cw,ch*.35);
- for(let i=0;i<18;i++){
-  ctx.strokeStyle="rgba(255,255,255,.14)";ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(i*cw/15,ch*.78+(i%3)*7);
-  ctx.lineTo(i*cw/15+28,ch*.78+(i%3)*7);ctx.stroke();
+function treeGroup(parent,x,z,scale=1,autumn=false){
+ const g=new THREE.Group();g.position.set(x,0,z);parent.add(g);
+ cylinder(g,.045*scale,.065*scale,.38*scale,M.trunk,0,.19*scale,0,6);
+ const foliage=autumn?mat(0xd48a55):[M.leaf,M.leaf2,mat(0x42754e)][Math.floor(Math.random()*3)];
+ sphere(g,.23*scale,foliage,0,.46*scale,0,7);
+ sphere(g,.16*scale,foliage,-.12*scale,.55*scale,.02*scale,7);
+ sphere(g,.15*scale,foliage,.11*scale,.56*scale,-.03*scale,7);
+ return g;
+}
+function makeBuilding(type,x,z){
+ const d=defs[type],g=new THREE.Group();g.position.set(x,0,z);world.add(g);
+ const w=.65+Math.random()*.12,dep=.62+Math.random()*.12;
+ if(type==="park"){
+  flat(g,.92,.92,mat(0x8bb77d),0,.015,0);
+  for(const [tx,tz,s] of [[-.22,-.2,.8],[.22,.17,.7],[-.15,.28,.65]])
+   treeGroup(g,tx,tz,s);
+  flat(g,.12,.72,M.sidewalk,0,.024,0);
+  flat(g,.7,.12,M.sidewalk,0,.025,0);
+  return g;
  }
- // The map is a raised green island.
- const corners=[project(0,0),project(N,0),project(N,N),project(0,N)];
- const bottom=corners.map(p=>({x:p.x,y:p.y+9}));
- polygon([...corners,...bottom.slice().reverse()],"#587b65");
- polygon(corners,"#91bd8d");
- for(let y=0;y<N;y++)for(let x=0;x<N;x++){
-  const pts=diamond(x,y);
-  const fill=(x+y)%2?"#98c591":"#a4ce97";
-  polygon(pts,fill,showGrid?"rgba(52,103,68,.22)":null);
- }
-}
-function drawRoad(x,y) {
- const pts=diamond(x,y);
- const p=project(x,y);
- polygon(pts,"#737e86","#59646b");
- // Asphalt center inset.
- polygon([
-  {x:p.x,y:p.y+tileH*.13},
-  {x:p.x+tileW*.36,y:p.y+tileH*.5},
-  {x:p.x,y:p.y+tileH*.87},
-  {x:p.x-tileW*.36,y:p.y+tileH*.5}
- ],"#424d57");
- // Connect road ends smoothly.
- const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
- for(const [dx,dy] of dirs) if(isRoad(x+dx,y+dy)){
-  const q=project(x+dx,y+dy);
-  ctx.strokeStyle="#424d57";ctx.lineWidth=tileW*.18;
-  ctx.beginPath();ctx.moveTo(p.x,p.y+tileH*.5);ctx.lineTo(q.x,q.y+tileH*.5);ctx.stroke();
- }
- // Dashed road marking.
- ctx.strokeStyle="#e9d9a2";ctx.lineWidth=Math.max(1,tileW*.018);
- ctx.setLineDash([tileW*.10,tileW*.09]);
- ctx.beginPath();ctx.moveTo(p.x-tileW*.15,p.y+tileH*.5);
- ctx.lineTo(p.x+tileW*.15,p.y+tileH*.5);ctx.stroke();ctx.setLineDash([]);
-}
-function drawTree(cx,cy,size=1) {
- ctx.fillStyle="#52735a";
- ctx.fillRect(cx-2*size,cy-1*size,4*size,10*size);
- ctx.fillStyle="#2e8059";
- ctx.beginPath();ctx.arc(cx,cy-5*size,8*size,0,Math.PI*2);ctx.fill();
- ctx.fillStyle="#53a56c";
- ctx.beginPath();ctx.arc(cx-3*size,cy-8*size,5*size,0,Math.PI*2);ctx.fill();
-}
-function drawBuilding(x,y,type) {
- const p=project(x,y);
- const cx=p.x, baseY=p.y+tileH*.56;
- const d=TYPES[type];
- if(type==="park") {
-  polygon(diamond(x,y,1),"#6da86d");
-  drawTree(cx-tileW*.12,baseY-tileH*.2,.75);
-  drawTree(cx+tileW*.13,baseY-tileH*.15,.65);
-  ctx.strokeStyle="#d9d2aa";ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(cx-tileW*.18,baseY);ctx.lineTo(cx+tileW*.18,baseY-tileH*.18);ctx.stroke();
-  return;
- }
- let w=tileW*.52, depth=tileH*.50;
- let h=tileH*1.2;
- if(type==="house"){h=tileH*.95;w=tileW*.48;}
- if(type==="shop"){h=tileH*1.5;}
- if(type==="office"){h=tileH*2.7;}
- if(type==="factory"){h=tileH*1.7;w=tileW*.58;}
- if(type==="power"){h=tileH*2.2;}
- if(type==="waterplant"){h=tileH*1.9;}
- if(type==="school"){h=tileH*1.5;}
- if(type==="hospital"){h=tileH*2.4;}
- if(type==="police"||type==="fire"){h=tileH*1.4;}
- const colors={
-  house:["#e9d8b6","#c7a47d","#a96e50"],
-  shop:["#e4eee8","#b9c9c6","#668f91"],
-  office:["#a6d9e7","#6bafc8","#447c9d"],
-  factory:["#d2d4cf","#adb8b6","#7b898c"],
-  power:["#e0e5db","#bac5bd","#748c85"],
-  waterplant:["#c3e5f0","#8cc9db","#438eb5"],
-  school:["#f0d9a8","#dfb66b","#b98b48"],
-  hospital:["#e6edf0","#b6d2dd","#6e9fb2"],
-  police:["#d4e1ec","#91b4ce","#527a9a"],
-  fire:["#e9b5a7","#d87869","#a84640"]
- };
- const c=colors[type]||colors.house;
- // Building walls: three visible faces for an isometric 3D effect.
- const top=[{x:cx,y:baseY-h},{x:cx+w/2,y:baseY-h+depth/2},{x:cx,y:baseY-h+depth},{x:cx-w/2,y:baseY-h+depth/2}];
- polygon([{x:cx-w/2,y:baseY-h+depth/2},{x:cx,y:baseY-h+depth},{x:cx,y:baseY+depth*.35},{x:cx-w/2,y:baseY-depth*.15}],c[2]);
- polygon([{x:cx,y:baseY-h+depth},{x:cx+w/2,y:baseY-h+depth/2},{x:cx+w/2,y:baseY+depth*.35},{x:cx,y:baseY+depth*.35}],c[1]);
- polygon(top,c[0],"rgba(30,50,60,.45)");
- if(type==="house") {
-  polygon([{x:cx-w*.55,y:baseY-h+depth*.5},{x:cx,y:baseY-h-depth*.18},{x:cx+w*.55,y:baseY-h+depth*.5},{x:cx,y:baseY-h+depth*1.18}],"#b95745");
-  ctx.fillStyle="#7dcedb";
-  ctx.fillRect(cx-w*.24,baseY-h+depth*.45,w*.13,h*.20);
-  ctx.fillRect(cx+w*.08,baseY-h+depth*.48,w*.13,h*.20);
- } else if(type==="office"||type==="hospital"||type==="shop"||type==="school"||type==="police"||type==="fire") {
-  const floors=type==="office"?4:type==="hospital"?3:2;
-  for(let i=0;i<floors;i++) {
-   const wy=baseY-h+depth*.45+i*(h*.65/floors);
-   for(let j=0;j<2;j++) {
-    const wx=cx-w*.32+j*w*.34;
-    ctx.fillStyle=type==="hospital"?"#f4f7f8":type==="fire"?"#ffe4d6":"#d9f4fa";
-    ctx.fillRect(wx,wy,w*.12,Math.max(2,tileH*.13));
+ if(type==="house"){
+  const wall=[mat(0xe5d6bd),mat(0xe8c8a9),mat(0xd3d8d1),mat(0xe5c2bc)][Math.floor(Math.random()*4)];
+  const h=.62+Math.random()*.16;
+  box(g,w,h,dep,wall,0,h/2+.025,0);
+  const roofMat=[M.redRoof,mat(0x77736a),mat(0x4e6066)][Math.floor(Math.random()*3)];
+  // Pitched roof using a triangular prism
+  const shape=new THREE.Shape();
+  shape.moveTo(-w*.58,0);shape.lineTo(0,.32);shape.lineTo(w*.58,0);shape.closePath();
+  const roofGeo=new THREE.ExtrudeGeometry(shape,{depth:dep*1.08,bevelEnabled:false});
+  const roof=new THREE.Mesh(roofGeo,roofMat);
+  roof.rotation.y=Math.PI/2;roof.position.set(-dep*.54,h+.025,-w*.58);
+  roof.castShadow=true;g.add(roof);
+  box(g,.14,.22,.025,M.glass,-.18,.35,dep/2+.014,false);
+  box(g,.14,.22,.025,M.glass,.18,.35,dep/2+.014,false);
+  box(g,.13,.29,.035,mat(0x886b51),0,.17,dep/2+.02,false);
+  box(g,.18,.035,.14,mat(0x62666a),.2,h+.1,-.1,false);
+ }else{
+  const isFactory=type==="factory",isOffice=type==="office";
+  const floors=type==="shop"?2:type==="office"?5:type==="hospital"?4:
+   type==="school"?2:type==="factory"?2:3;
+  const h=floors*.48;
+  const wall=type==="office"?mat(0xb4c5c9,.42,.12):
+   type==="shop"?mat(0xe4d5bf):type==="factory"?mat(0xb8b8ae):
+   type==="hospital"?mat(0xe6e8e4):type==="school"?mat(0xdac6a2):
+   type==="police"?mat(0xcbd8e0):type==="fire"?mat(0xd9b2a6):
+   type==="power"?mat(0xb5c1bd):mat(0xa7d4df);
+  box(g,w,h,dep,wall,0,h/2+.02,0);
+  // Flat rooftop and parapet
+  box(g,w+.05,.07,dep+.05,M.roof,0,h+.045,0);
+  box(g,w+.04,.09,.045,M.concrete,0,h+.07,dep/2);
+  // Facade window grids
+  for(let f=0;f<floors;f++){
+   for(let j=0;j<3;j++){
+    const wx=(j-1)*w*.29;
+    const wy=.16+f*.46;
+    box(g,.105,.19,.018,isFactory?M.roof:M.darkGlass,wx,wy,dep/2+.013,false);
+    box(g,.105,.018,.022,M.white,wx,wy+.10,dep/2+.024,false);
    }
   }
-  if(type==="hospital"){
-   ctx.fillStyle="#e75f67";ctx.fillRect(cx-w*.07,baseY-h+depth*.3,w*.14,tileH*.36);
-   ctx.fillRect(cx-w*.18,baseY-h+depth*.4,w*.36,tileH*.12);
+  for(let f=0;f<floors;f++){
+   for(let j=0;j<2;j++){
+    box(g,.018,.19,.105,M.white,w/2+.012,.16+f*.46,(j-.5)*dep*.42,false);
+   }
   }
   if(type==="shop"){
-   ctx.fillStyle="#e2ad65";ctx.fillRect(cx-w*.25,baseY-h+depth*.4,w*.5,tileH*.18);
+   box(g,w*.8,.12,.035,mat(0x418d8d),0,.28,dep/2+.03,false);
+   box(g,.17,.25,.035,M.glass,0,.13,dep/2+.035,false);
+  }
+  if(type==="office"){
+   for(let i=0;i<3;i++)box(g,.04,.28,.04,M.yellow,-.19+i*.19,h+.12,0,false);
   }
   if(type==="school"){
-   ctx.fillStyle="#b85e54";ctx.fillRect(cx-w*.12,baseY-h+depth*.2,w*.24,tileH*.16);
+   box(g,.2,.07,.2,M.redRoof,0,h+.1,0);
+   box(g,.13,.09,.035,M.yellow,0,h+.16,dep/2+.025,false);
   }
- } else if(type==="factory") {
-  ctx.fillStyle="#7b8585";
-  ctx.fillRect(cx+w*.10,baseY-h-tileH*.35,w*.14,tileH*.55);
-  ctx.fillStyle="#d7e1dd";
-  ctx.fillRect(cx-w*.20,baseY-h+depth*.35,w*.17,tileH*.16);
- } else if(type==="power") {
-  ctx.strokeStyle="#667b82";ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(cx,baseY-h+depth*.4);ctx.lineTo(cx,baseY-h-tileH*.25);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(cx-w*.23,baseY-h+depth*.55);ctx.lineTo(cx+w*.23,baseY-h+depth*.55);ctx.stroke();
- } else if(type==="waterplant") {
-  ctx.fillStyle="#60bad8";
-  ctx.beginPath();ctx.ellipse(cx,baseY-h+depth*.6,w*.32,tileH*.17,0,0,Math.PI*2);ctx.fill();
- }
- // A little shadow gives the structure depth.
- ctx.fillStyle="rgba(30,54,46,.16)";
- polygon([{x:cx+w*.5,y:baseY+depth*.35},{x:cx+w*.8,y:baseY+depth*.8},{x:cx+w*.15,y:baseY+depth*1.1},{x:cx,y:baseY+depth*.35}],"rgba(30,54,46,.12)");
-}
-function draw() {
- if(!cw||!ch)return;
- ctx.setTransform(dpr,0,0,dpr,0,0);
- ctx.clearRect(0,0,cw,ch);
- drawGround();
- // Sort by isometric depth so buildings overlap correctly.
- const items=[];
- for(let y=0;y<N;y++)for(let x=0;x<N;x++){
-  const tile=state.map[y][x];
-  if(tile.type) items.push({x,y,type:tile.type,depth:x+y});
- }
- items.sort((a,b)=>a.depth-b.depth);
- for(const item of items) {
-  if(item.type==="road") drawRoad(item.x,item.y);
-  else drawBuilding(item.x,item.y,item.type);
- }
- if(showGrid) {
-  for(let y=0;y<N;y++)for(let x=0;x<N;x++){
-   const p=project(x,y);
-   const pts=diamond(x,y);
-   if(hover&&hover.x===x&&hover.y===y) {
-    polygon(pts,selected==="bulldoze"?"rgba(255,100,110,.34)":"rgba(48,255,172,.30)","#f2fff9");
-   }
+  if(type==="hospital"){
+   box(g,.10,.35,.04,mat(0xd95459),0,h+.25,dep/2+.03,false);
+   box(g,.32,.09,.04,mat(0xd95459),0,h+.25,dep/2+.035,false);
+  }
+  if(type==="factory"){
+   cylinder(g,.08,.1,.65,M.roof,.2,h+.32,-.13,8);
+   cylinder(g,.06,.08,.48,mat(0x9baba7),.2,h+.62,-.13,8);
+  }
+  if(type==="power"){
+   box(g,.16,.35,.16,M.yellow,-.18,h+.2,0);
+   box(g,.12,.24,.12,M.roof,.18,h+.15,0);
+  }
+  if(type==="water"){
+   cylinder(g,.22,.22,.18,M.water,0,h+.15,0,12);
+   cylinder(g,.18,.18,.45,M.water,0,h+.45,0,12);
+   cylinder(g,.22,.22,.08,M.white,0,h+.7,0,12);
+  }
+  if(type==="police"||type==="fire"){
+   box(g,.25,.1,.04,type==="fire"?mat(0xc04b3f):M.darkGlass,0,h+.12,dep/2+.035,false);
   }
  }
- // Compass / decorative city title.
- ctx.fillStyle="rgba(21,46,55,.8)";
- ctx.beginPath();ctx.arc(cw-25,30,15,0,Math.PI*2);ctx.fill();
- ctx.fillStyle="#fff";ctx.font="bold 12px sans-serif";ctx.textAlign="center";
- ctx.fillText(["N","E","S","W"][camera],cw-25,34);
+ // Surrounding paved lot
+ flat(g,.96,.96,M.sidewalk,0,.002,0);
+ // Rebuild building parts above lot by moving all non-lot pieces slightly up.
+ // The lot is decorative; buildings remain anchored at ground level.
+ return g;
 }
-function eventPoint(e) {
- const rect=canvas.getBoundingClientRect();
- return {x:e.clientX-rect.left,y:e.clientY-rect.top};
+function makeLot(type,x,z){
+ const g=new THREE.Group();g.position.set(x,0,z);world.add(g);
+ if(type==="park"){
+  flat(g,.94,.94,mat(0x8cb780),0,.009,0);
+  for(const [a,b,s] of [[-.24,-.2,.8],[.2,.15,.72],[-.15,.27,.62]])
+   treeGroup(g,a,b,s);
+  flat(g,.12,.78,M.sidewalk,0,.022,0);
+  flat(g,.78,.12,M.sidewalk,0,.023,0);
+  return g;
+ }
+ const building=makeBuilding(type,x,z);
+ return building;
 }
-function pointerMove(e) {
- const p=eventPoint(e), tile=unproject(p.x,p.y);
- hover=inBounds(tile.x,tile.y)?tile:null;
- draw();
+function connectedRoad(x,z){
+ return [[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>roads.has(key(x+a,z+b)));
 }
-function pointerDown(e) {
- const p=eventPoint(e), tile=unproject(p.x,p.y);
- if(!inBounds(tile.x,tile.y)) return;
- place(tile.x,tile.y,selected);
+function cellFromHit(point){
+ return {x:Math.floor(point.x+HALF),z:Math.floor(point.z+HALF)};
 }
-canvas.addEventListener("pointermove",pointerMove);
-canvas.addEventListener("pointerdown",pointerDown);
-canvas.addEventListener("pointerleave",()=>{hover=null;draw();});
-
-function save(show=true) {
- try {
-  const payload={state,selected,taxRate,speed,camera,showGrid,version:1};
-  localStorage.setItem(SAVE_KEY,JSON.stringify(payload));
-  if(show) toast("Permainan berjaya disimpan! 💾");
- } catch(e) {
-  if(show) toast("Simpanan gagal. Semak ruang storan browser.");
+function validCell(x,z){return x>=0&&z>=0&&x<SIZE&&z<SIZE}
+function center(x,z){return {x:x-HALF+.5,z:z-HALF+.5}}
+function toast(msg){
+ const el=$("toast");el.textContent=msg;el.style.display="block";
+ clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.style.display="none",2300);
+}
+function addRoad(x,z){
+ const k=key(x,z);
+ if(roads.has(k)){toast("Jalan sudah dibina di sini.");return}
+ if(money<defs.road.cost){toast("Wang tidak mencukupi.");return}
+ money-=defs.road.cost;
+ const p=center(x,z),g=roadGroup(p.x,p.z);
+ roads.set(k,{x,z,group:g});tiles.set(k,"road");
+ updateUI();save(false);
+}
+function build(type,x,z){
+ if(!validCell(x,z))return;
+ const k=key(x,z);
+ if(type==="bulldoze"){
+  if(roads.has(k)){
+   world.remove(roads.get(k).group);roads.delete(k);tiles.delete(k);
+   money+=125;toast("Jalan dipadam · RM125 dipulangkan");
+  }else if(tiles.has(k)){
+   const old=tiles.get(k),b=buildings.find(v=>v.key===k);
+   if(b){world.remove(b.group);buildings=buildings.filter(v=>v!==b)}
+   tiles.delete(k);money+=Math.floor((defs[old]?.cost||0)*.25);
+   toast("Bangunan dipadam");
+  }else{toast("Petak kosong.");return}
+  updateUI();save(false);return;
+ }
+ if(!defs[type])return;
+ if(tiles.has(k)){toast("Petak sudah digunakan.");return}
+ if(type!=="road"&&!connectedRoad(x,z)){
+  toast("Bangunan mesti bersebelahan jalan.");return;
+ }
+ if(money<defs[type].cost){toast("Wang tidak mencukupi!");return}
+ money-=defs[type].cost;
+ if(type==="road"){
+  const p=center(x,z),g=roadGroup(p.x,p.z);
+  roads.set(k,{x,z,group:g});tiles.set(k,"road");
+ }else{
+  const p=center(x,z),g=makeLot(type,p.x,p.z);
+  buildings.push({key:k,type,x,z,group:g});
+  tiles.set(k,type);
+ }
+ toast(defs[type].name+" dibina!");
+ updateUI();save(false);
+}
+const rayPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
+function pick(e){
+ const rect=renderer.domElement.getBoundingClientRect();
+ pointer.x=((e.clientX-rect.left)/rect.width)*2-1;
+ pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;
+ raycaster.setFromCamera(pointer,camera);
+ const hit=new THREE.Vector3();
+ if(raycaster.ray.intersectPlane(rayPlane,hit))return cellFromHit(hit);
+ return null;
+}
+function setSelected(type){
+ selected=type;
+ document.querySelectorAll(".tool").forEach(b=>b.classList.toggle("selected",b.dataset.type===type));
+ $("hint").textContent=type==="bulldoze"?"Sentuh jalan atau bangunan untuk memadam":`Bina ${defs[type].name} · ${type==="road"?"Pilih petak tanah":"Sentuh petak bersebelahan jalan"}`;
+}
+function buildTools(){
+ const order=["road","house","shop","office","factory","park","power","water","school","hospital","police","fire"];
+ $("tools").innerHTML=order.map(t=>`<button class="tool ${selected===t?"selected":""}" data-type="${t}">
+ <span class="ico">${defs[t].icon}</span><span class="nm">${defs[t].name}</span>
+ <span class="cost">RM ${defs[t].cost.toLocaleString("en-MY")}</span></button>`).join("");
+ document.querySelectorAll("[data-type]").forEach(b=>b.addEventListener("click",()=>setSelected(b.dataset.type)));
+}
+const carsGroup=new THREE.Group();world.add(carsGroup);
+function makeCar(color,x,z,angle=0){
+ const g=new THREE.Group();carsGroup.add(g);
+ const body=mat(color,.48);
+ box(g,.24,.12,.43,body,0,.12,0);
+ box(g,.19,.10,.21,M.glass,0,.22,-.02);
+ for(const a of [-1,1])for(const b of [-1,1]){
+  cylinder(g,.045,.045,.035,mat(0x20262a),a*.13,.055,b*.13,8).rotation.x=Math.PI/2;
+ }
+ g.position.set(x,.02,z);g.rotation.y=angle;
+ return g;
+}
+function createCars(){
+ for(const c of cars)carsGroup.remove(c.mesh);
+ cars=[];
+ const colors=[0xffffff,0x365b84,0xc74f3c,0xe0b84f,0x555b60,0x2e7b67];
+ for(let i=0;i<7;i++){
+  const lane=i%2?.17:-.17;
+  const mesh=makeCar(colors[i%colors.length],-12+i*3,.5+lane,i%2?Math.PI:0);
+  cars.push({mesh,lane,dir:i%2?-1:1,offset:i*4});
  }
 }
-function load() {
- try {
-  const raw=localStorage.getItem(SAVE_KEY);
-  if(!raw) return false;
-  const data=JSON.parse(raw);
-  if(!data||!data.state||!Array.isArray(data.state.map)||data.state.map.length!==N) return false;
-  state=data.state;
-  state.mode=state.mode==="challenge"?"challenge":"sandbox";
-  state.history=Array.isArray(state.history)?state.history:[];
-  state.money=Number(state.money)||0;
-  state.day=Number(state.day)||1;
-  state.year=Number(state.year)||1;
-  state.map=state.map.map(row=>row.map(t=>({type:TYPES[t?.type]?t.type:null})));
-  selected=TYPES[data.selected]?data.selected:"road";
-  taxRate=[5,8,10,12,15].includes(data.taxRate)?data.taxRate:8;
-  speed=[1,2,4].includes(data.speed)?data.speed:1;
-  camera=Number.isInteger(data.camera)?((data.camera%4)+4)%4:0;
-  showGrid=data.showGrid!==false;
+function moveCars(dt){
+ const roadRows=[];
+ for(const r of roads.values())roadRows.push(r);
+ if(roadRows.length<2)return;
+ // Simple traffic loop along an east-west corridor when one exists.
+ for(const c of cars){
+  let z=.5+c.lane;
+  const path=[...roads.values()].filter(r=>Math.abs((r.z-HALF+.5)-z)<.6);
+  if(path.length<2){
+   // Fall back to a visible demonstration route; vehicles stay on the island.
+   z=.5+c.lane;
+  }
+  c.mesh.position.x+=dt*.85*c.dir*speed;
+  if(c.mesh.position.x>HALF-1)c.mesh.position.x=-HALF+1;
+  if(c.mesh.position.x< -HALF+1)c.mesh.position.x=HALF-1;
+ }
+}
+function getTotals(){
+ let genP=0,genW=0,useP=0,useW=0,cap=0,jobs=0,taxBase=0,parks=0;
+ for(const b of buildings){
+  if(!connectedRoad(b.x,b.z))continue;
+  const d=defs[b.type];
+  genP+=d.genPower||0;genW+=d.genWater||0;
+  useP+=d.power||0;useW+=d.water||0;
+  cap+=d.pop||0;jobs+=d.jobs||0;taxBase+=d.tax||0;
+  if(b.type==="park")parks++;
+ }
+ const ps=useP?Math.min(1,genP/useP):1;
+ const ws=useW?Math.min(1,genW/useW):1;
+ const factor=Math.min(ps,ws);
+ const pop=Math.floor(cap*factor);
+ const income=Math.floor(pop*tax*1.8+taxBase*tax/8);
+ const expenses=Math.floor(genP/100*320+genW/100*220+
+  roads.size*3+buildings.filter(b=>["factory","office"].includes(b.type)).length*50);
+ const happy=Math.max(5,Math.min(100,Math.round(75+parks*3-(1-factor)*25-Math.max(0,tax-8)*2)));
+ return {genP,genW,useP,useW,cap,pop,income,expenses,ps,ws,happy,jobs};
+}
+function updateUI(){
+ const t=getTotals();
+ population=t.pop;happiness=t.happy;
+ $("money").textContent="RM "+Math.round(money).toLocaleString("en-MY");
+ $("net").textContent=(t.income-t.expenses>=0?"+":"−")+"RM "+Math.abs(t.income-t.expenses)+"/hari";
+ $("pop").textContent=population.toLocaleString("en-MY");
+ $("capacity").textContent="Kapasiti "+t.cap.toLocaleString("en-MY");
+ $("power").textContent=t.useP+" / "+t.genP;
+ $("water").textContent=t.useW+" / "+t.genW;
+ $("date").textContent=`HARI ${day} · TAHUN ${year}`;
+ $("city").textContent=mode==="challenge"?"BANDAR CABARAN":"BANDAR BARU";
+ $("status").textContent=paused?"Ⅱ DIJEDA":"● SIMULASI AKTIF";
+ $("status").style.color=paused?"#ffd166":"#46e5a6";
+ $("pause").textContent=paused?"▶":"Ⅱ";
+ $("mode").textContent=mode==="sandbox"?"🌴 Sandbox":"🏆 Cabaran";
+ $("speed").textContent=`▶ ${speed}×`;
+ $("tax").textContent=`Cukai ${tax}%`;
+ if(mode==="challenge"&&!challengeWon&&population>=500&&buildings.some(b=>b.type==="hospital")){
+  challengeWon=true;toast("🏆 CABARAN SELESAI! Bandar berjaya!");
+ }
+}
+function save(show=true){
+ try{
+  const data={
+   money,day,year,mode,speed,tax,challengeWon,
+   roads:[...roads.values()].map(r=>[r.x,r.z]),
+   buildings:buildings.map(b=>[b.type,b.x,b.z])
+  };
+  localStorage.setItem(KEY,JSON.stringify(data));
+  if(show)toast("Bandar disimpan! 💾");
+ }catch(e){if(show)toast("Simpanan gagal.")}
+}
+function load(){
+ try{
+  const d=JSON.parse(localStorage.getItem(KEY)||"null");
+  if(!d)return false;
+  money=Number(d.money)||0;day=d.day||1;year=d.year||1;
+  mode=d.mode==="challenge"?"challenge":"sandbox";
+  speed=[1,2,4].includes(d.speed)?d.speed:1;
+  tax=[5,8,10,12,15].includes(d.tax)?d.tax:8;
+  challengeWon=!!d.challengeWon;
+  for(const [x,z] of d.roads||[])if(validCell(x,z))addRoadLoaded(x,z);
+  for(const [type,x,z] of d.buildings||[])if(defs[type]&&validCell(x,z))addBuildingLoaded(type,x,z);
   return true;
- } catch(e) { return false; }
+ }catch(e){return false}
 }
-function newCity() {
- state=makeState(state.mode);
- paused=false;speed=1;taxRate=8;selected="road";
- state.history=[];
- addLog("🌆","Bandar baru dimulakan","Selamat datang, Datuk Bandar!");
- buildTools();updateUI();resizeCanvas();save(false);
- toast("Bandar baru sedia untuk dibina!");
+function addRoadLoaded(x,z){
+ const k=key(x,z);if(tiles.has(k))return;
+ const p=center(x,z),g=roadGroup(p.x,p.z);
+ roads.set(k,{x,z,group:g});tiles.set(k,"road");
 }
-function showConfirm(title,text,action) {
- $("dialogTitle").textContent=title;
- $("dialogText").textContent=text;
- pendingAction=action;
- const dlg=$("confirmDialog");
- if(typeof dlg.showModal==="function") dlg.showModal();
- else if(confirm(text)) { if(pendingAction)pendingAction();pendingAction=null; }
+function addBuildingLoaded(type,x,z){
+ const k=key(x,z);if(tiles.has(k))return;
+ const p=center(x,z),g=makeLot(type,p.x,p.z);
+ buildings.push({key:k,type,x,z,group:g});tiles.set(k,type);
 }
-$("cancelDialog").addEventListener("click",()=>{pendingAction=null;$("confirmDialog").close();});
-$("confirmDialogBtn").addEventListener("click",()=>{
- $("confirmDialog").close();
- if(pendingAction)pendingAction();
- pendingAction=null;
+function reset(){
+ if(!confirm("Mulakan bandar baharu? Kemajuan sekarang akan hilang."))return;
+ for(const r of roads.values())world.remove(r.group);
+ for(const b of buildings)world.remove(b.group);
+ roads.clear();buildings=[];tiles.clear();
+ money=250000;day=1;year=1;population=0;challengeWon=false;
+ // A starting road segment
+ for(let x=10;x<15;x++)addRoadLoaded(x,13);
+ updateUI();save(false);toast("Bandar baru sedia!");
+}
+function resize(){
+ const w=$("stage").clientWidth,h=$("stage").clientHeight;
+ if(!w||!h)return;
+ renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+}
+renderer.domElement.addEventListener("pointerdown",e=>{
+ pointerStart={x:e.clientX,y:e.clientY};
+ dragged=false;
 });
-$("saveBtn").addEventListener("click",()=>save(true));
-$("soundBtn").addEventListener("click",()=>{
- audioOn=!audioOn;$("soundBtn").textContent=audioOn?"🔊":"🔇";
- toast(audioOn?"Bunyi dihidupkan":"Bunyi dimatikan");if(audioOn)playSound();
+renderer.domElement.addEventListener("pointermove",e=>{
+ if(pointerStart&&Math.hypot(e.clientX-pointerStart.x,e.clientY-pointerStart.y)>7)dragged=true;
 });
-$("pauseBtn").addEventListener("click",()=>{
- paused=!paused;updateUI();toast(paused?"Simulasi dijeda":"Simulasi disambung");
+renderer.domElement.addEventListener("pointerup",e=>{
+ if(dragged)return;
+ const c=pick(e);if(!c||!validCell(c.x,c.z))return;
+ build(selected,c.x,c.z);
 });
-$("speedBtn").addEventListener("click",()=>{
- speed=speed===1?2:speed===2?4:1;updateUI();toast("Kelajuan simulasi: "+speed+"×");
-});
-$("taxBtn").addEventListener("click",()=>{
- const rates=[5,8,10,12,15];
- taxRate=rates[(rates.indexOf(taxRate)+1)%rates.length];
- updateUI();toast("Kadar cukai ditetapkan kepada "+taxRate+"%");
-});
-$("newBtn").addEventListener("click",()=>showConfirm("Bandar Baru","Mulakan bandar baharu? Kemajuan bandar sekarang akan digantikan.",newCity));
-$("resetBtn").addEventListener("click",()=>showConfirm("Reset Game","Semua kemajuan dan simpanan game ini akan dipadam. Teruskan?",()=>{
-  localStorage.removeItem(SAVE_KEY);newCity();
-}));
-$("bulldozeBtn").addEventListener("click",()=>{
- selected="bulldoze";buildTools();toast("Pilih petak pada peta untuk memadam binaan.");
-});
-$("repairBtn").addEventListener("click",()=>{
- const cost=5000;
- if(state.money<cost){toast("Wang tidak mencukupi untuk penyelenggaraan.");return;}
- state.money-=cost;
- state.happiness=Math.min(100,state.happiness+8);
- addLog("🔧","Penyelenggaraan bandar",`Kos ${rm(cost)}. Kebahagiaan penduduk dipulihkan.`);
- updateUI();save(false);toast("Penyelenggaraan selesai.");
-});
-$("exportBtn").addEventListener("click",()=>{
- const data=JSON.stringify({state,totals:totals(),taxRate,exportedAt:new Date().toISOString()},null,2);
- const blob=new Blob([data],{type:"application/json"});
- const url=URL.createObjectURL(blob);
- const a=document.createElement("a");a.href=url;a.download="cityverse-my-city.json";a.click();
- setTimeout(()=>URL.revokeObjectURL(url),1000);
- toast("Data bandar dieksport.");
-});
-$("rotateBtn").addEventListener("click",()=>{camera=(camera+1)%4;draw();});
-$("gridBtn").addEventListener("click",()=>{showGrid=!showGrid;draw();$("gridBtn").classList.toggle("active",showGrid);});
-document.querySelectorAll("[data-mode]").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
-document.addEventListener("visibilitychange",()=>{if(document.hidden)save(false);});
+$("save").onclick=()=>save(true);
+$("pause").onclick=()=>{paused=!paused;updateUI()};
+$("zoomIn").onclick=()=>{camera.position.sub(controls.target).multiplyScalar(.82).add(controls.target);controls.update()};
+$("zoomOut").onclick=()=>{camera.position.sub(controls.target).multiplyScalar(1.2).add(controls.target);controls.update()};
+$("rotate").onclick=()=>{const p=camera.position.clone().sub(controls.target);p.applyAxisAngle(new THREE.Vector3(0,1,0),Math.PI/4);camera.position.copy(controls.target.clone().add(p));controls.update()};
+$("home").onclick=()=>{camera.position.set(25,28,31);controls.target.set(0,0,0);controls.update()};
+$("grid").onclick=()=>{gridVisible=!gridVisible;groundTiles.visible=gridVisible};
+$("bulldoze").onclick=()=>setSelected("bulldoze");
+$("mode").onclick=()=>{
+ mode=mode==="sandbox"?"challenge":"sandbox";
+ if(mode==="challenge")toast("Sasaran: 500 penduduk dan bina hospital!");
+ updateUI();save(false);
+};
+$("speed").onclick=()=>{speed=speed===1?2:speed===2?4:1;updateUI()};
+$("tax").onclick=()=>{const rates=[5,8,10,12,15];tax=rates[(rates.indexOf(tax)+1)%rates.length];updateUI()};
+$("reset").onclick=reset;
+$("export").onclick=()=>{
+ const blob=new Blob([localStorage.getItem(KEY)||"{}"],{type:"application/json"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+ a.download="cityverse3d.json";a.click();URL.revokeObjectURL(a.href);
+};
+window.addEventListener("resize",resize);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)save(false)});
 window.addEventListener("pagehide",()=>save(false));
-window.addEventListener("resize",resizeCanvas);
 
-function frame(now) {
- if(!paused) {
-  const elapsed=Math.min(1000,now-lastTick);
-  tickAccumulator+=elapsed*speed;
-  const interval=9000;
-  while(tickAccumulator>=interval) {
-   dailyTick();
-   tickAccumulator-=interval;
+buildTools();
+if(!load())for(let x=10;x<15;x++)addRoadLoaded(x,13);
+createCars();resize();updateUI();
+
+let lastSave=performance.now();
+function animate(now){
+ requestAnimationFrame(animate);
+ const dt=Math.min((now-lastFrame)/1000,.05);lastFrame=now;
+ controls.update();
+ if(!paused){
+  simClock+=dt*speed;
+  moveCars(dt);
+  if(simClock>=9){
+   simClock=0;day++;
+   if(day>365){day=1;year++}
+   const t=getTotals();money+=t.income-t.expenses;
+   updateUI();
   }
  }
- lastTick=now;
- requestAnimationFrame(frame);
+ if(now-lastSave>15000){save(false);lastSave=now}
+ renderer.render(scene,camera);
 }
-
-const loaded=load();
-if(!loaded) {
- state=makeState();
- addLog("🌆","Selamat datang!","Mulakan dengan jalan raya dan kawasan perumahan.");
-}
-buildTools();
-document.querySelectorAll("[data-mode]").forEach(b=>b.classList.toggle("selected",b.dataset.mode===state.mode));
-$("modeInfo").textContent=state.mode==="challenge"
- ?"Sasaran: capai 500 penduduk dan bina hospital. Dana dan kos pembinaan tetap terpakai."
- :"Bina bandar bebas. Dana permulaan RM250,000.";
-updateUI();
-resizeCanvas();
-requestAnimationFrame(frame);
-setInterval(()=>save(false),15000);
-})();
+requestAnimationFrame(animate);
 </script>
 </body>
 </html>
